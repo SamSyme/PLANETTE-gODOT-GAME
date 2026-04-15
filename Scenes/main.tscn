@@ -1,0 +1,149 @@
+[gd_scene format=3 uid="uid://cm00ouhlgrwfy"]
+
+[ext_resource type="PackedScene" uid="uid://dieblxxbkug7p" path="res://Scenes/sphere.tscn" id="1_jjgbg"]
+[ext_resource type="PackedScene" uid="uid://3lbhksapsn35" path="res://Scenes/player.tscn" id="2_bo1nx"]
+[ext_resource type="Script" uid="uid://k1g88inga8w8" path="res://Scripts/camera.gd" id="3_jjvhh"]
+[ext_resource type="Script" uid="uid://ycc5kbajmciy" path="res://Scripts/spawn_manager.gd" id="5_kry3j"]
+[ext_resource type="PackedScene" uid="uid://xka2b7ymfasa" path="res://Scenes/obstacle.tscn" id="6_21xkr"]
+[ext_resource type="PackedScene" uid="uid://dlclfknvbty3l" path="res://Scenes/meteor.tscn" id="7_6bp64"]
+[ext_resource type="Shader" uid="uid://hgnlcvv02umq" path="res://Assets/Shaders/glowplane.gdshader" id="7_344ge"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_21xkr"]
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_344ge"]
+panorama = SubResource("CompressedTexture2D_21xkr")
+
+[sub_resource type="Sky" id="Sky_jjgbg"]
+sky_material = SubResource("PanoramaSkyMaterial_344ge")
+
+[sub_resource type="Environment" id="Environment_bo1nx"]
+background_mode = 1
+background_color = Color(0.0646965, 0.0646965, 0.0646965, 1)
+sky = SubResource("Sky_jjgbg")
+tonemap_mode = 2
+glow_intensity = 0.0
+glow_hdr_threshold = 0.0
+glow_hdr_scale = 1.58
+fog_light_energy = 3.8
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ynf5e"]
+render_priority = 0
+shader = ExtResource("7_344ge")
+shader_parameter/glow_color = Color(1, 1, 1, 1)
+shader_parameter/intensity = 0.5
+shader_parameter/softness = 0.3
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_21xkr"]
+material = SubResource("ShaderMaterial_ynf5e")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6bp64"]
+bg_color = Color(1, 0.07999998, 0.07999998, 1)
+border_width_top = 10
+border_width_right = 10
+border_width_bottom = 10
+border_color = Color(0.99, 0.99, 0.99, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_344ge"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0, 0, 0, 0.6)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ynf5e"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0, 0, 0, 0.6)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[node name="Main" type="Node3D" unique_id=1453881087]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1336669719]
+environment = SubResource("Environment_bo1nx")
+
+[node name="Sphere" parent="." unique_id=1753572976 instance=ExtResource("1_jjgbg")]
+
+[node name="Camera" type="Camera3D" parent="." unique_id=606845293]
+transform = Transform3D(-0.689657, -6.71357e-08, -0.724136, -1.78814e-07, 1, 7.75884e-08, 0.724136, 1.82995e-07, -0.689657, -2.35167, -0.0674701, -2.4097)
+script = ExtResource("3_jjvhh")
+target_path = NodePath("../Player")
+height = 3.0
+intro_smoothness = 2.5
+intro_hold_time = 1.5
+intro_lerp_speed = 2.5
+hit_shake_strength = 0.02
+hit_shake_duration = 0.5
+
+[node name="Player" parent="." unique_id=417326415 node_paths=PackedStringArray("sphere_center", "spawn_point", "camera") instance=ExtResource("2_bo1nx")]
+transform = Transform3D(-0.200323, -0.68037, -0.704959, 0.968896, -0.0308603, -0.24554, 0.145303, -0.732219, 0.665389, -0.942583, 0, -1.24621)
+move_speed = 4.0
+turn_speed = 7.0
+sphere_center = NodePath("../Sphere")
+sphere_radius = 1.55
+spawn_point = NodePath("../spawnpoint")
+camera = NodePath("../Camera")
+
+[node name="Lightsource" type="SpotLight3D" parent="Player" unique_id=218003461]
+transform = Transform3D(0.243373, 0.968894, 0.0448522, -0.0610042, -0.0308601, 0.99766, 0.968013, -0.24554, 0.0515963, 0.0564337, 2.15433, 0.226706)
+spot_range = 9.33766
+spot_angle = 50.649
+
+[node name="Glowplane" type="MeshInstance3D" parent="Player" unique_id=2062859012]
+transform = Transform3D(4, -2.98023e-08, 1.19209e-07, 2.98023e-08, 4, -4.76837e-07, -1.19209e-07, 4.76837e-07, 4, 0.0520625, -2.86549, -0.211095)
+mesh = SubResource("PlaneMesh_21xkr")
+skeleton = NodePath("../..")
+
+[node name="MineSpawnManager" type="Node3D" parent="." unique_id=1735763913]
+script = ExtResource("5_kry3j")
+obstacle_scene = ExtResource("6_21xkr")
+mine_scene = ExtResource("6_21xkr")
+meteor_scene = ExtResource("7_6bp64")
+planet_path = NodePath("../Sphere")
+base_radius = 1.6
+spawn_interval = 3.0
+spawn_meteor_interval = 3.0
+
+[node name="spawnpoint" type="Node3D" parent="." unique_id=218624348]
+transform = Transform3D(-0.200323, -0.68037, -0.704959, 0.968895, -0.0308601, -0.24554, 0.145303, -0.732219, 0.665389, -0.942583, 0, -1.24621)
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=1277948252]
+
+[node name="ButtLR" type="Button" parent="UI" unique_id=997260677]
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 34544.0
+offset_top = -128.0
+offset_right = 50080.0
+offset_bottom = 21392.0
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0.14999998, 0, 1)
+theme_override_font_sizes/font_size = 300
+theme_override_styles/normal = SubResource("StyleBoxFlat_6bp64")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_344ge")
+text = ">>>>"
+
+[node name="ButtLL" type="Button" parent="UI" unique_id=1803022004]
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -384.0
+offset_top = -15.5
+offset_bottom = 15.5
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_ynf5e")
+text = ">>>>"

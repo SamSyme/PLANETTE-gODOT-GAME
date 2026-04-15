@@ -1,0 +1,28 @@
+[gd_scene load_steps=6 format=3 uid="uid://dieblxxbkug7p"]
+
+[ext_resource type="Script" uid="uid://2jflsqir4iww" path="res://Scripts/sphere.gd" id="1_vm764"]
+[ext_resource type="Texture2D" uid="uid://dbpcdxhg7lr6l" path="res://Assets/Texture/Moon_texture_1.png" id="2_vm764"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_tq04v"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tq04v"]
+albedo_texture = ExtResource("2_vm764")
+emission = Color(1, 1, 1, 1)
+emission_energy_multiplier = 0.3
+uv1_offset = Vector3(0.5, 0.5, 0.5)
+uv1_triplanar = true
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_uc5qg"]
+
+[node name="Sphere" type="StaticBody3D" groups=["planet"]]
+collision_mask = 0
+script = ExtResource("1_vm764")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0)
+mesh = SubResource("SphereMesh_tq04v")
+surface_material_override/0 = SubResource("StandardMaterial3D_tq04v")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0)
+shape = SubResource("SphereShape3D_uc5qg")

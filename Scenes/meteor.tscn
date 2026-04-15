@@ -1,0 +1,99 @@
+[gd_scene load_steps=18 format=3 uid="uid://dlclfknvbty3l"]
+
+[ext_resource type="Script" uid="uid://cthvdus0ifmsb" path="res://Scripts/meteor.gd" id="1_5civa"]
+[ext_resource type="Texture2D" uid="uid://cx8go040apayu" path="res://Assets/Texture/meteor_texture1.jpg" id="2_wm1ig"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_qp6yn"]
+radial_segments = 8
+rings = 4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qp6yn"]
+albedo_texture = ExtResource("2_wm1ig")
+emission_enabled = true
+emission = Color(0.147334, 0.116675, 1, 1)
+emission_energy_multiplier = 0.7
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_qp6yn"]
+radius = 0.100442
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_5civa"]
+radius = 0.104703
+
+[sub_resource type="Curve" id="Curve_wm1ig"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.272059, 0.516854), 0.0, 0.0, 0, 0, Vector2(0.492647, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_bgiwl"]
+curve = SubResource("Curve_wm1ig")
+
+[sub_resource type="Gradient" id="Gradient_wm1ig"]
+colors = PackedColorArray(1, 0, 0.0166664, 1, 1, 0.533333, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_bgiwl"]
+gradient = SubResource("Gradient_wm1ig")
+
+[sub_resource type="Curve" id="Curve_bgiwl"]
+_limits = [0.0, 12.0, 0.0, 1.0]
+_data = [Vector2(0, 12), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_aq33g"]
+curve = SubResource("Curve_bgiwl")
+
+[sub_resource type="Curve" id="Curve_aq33g"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.257353, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_mekeu"]
+curve = SubResource("Curve_aq33g")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_d1487"]
+particle_flag_align_y = true
+emission_shape = 1
+emission_sphere_radius = 0.2
+direction = Vector3(1, -1, 0)
+spread = 18.0
+initial_velocity_min = 0.4
+initial_velocity_max = 1.2
+gravity = Vector3(0, 5, 0)
+scale_min = 0.1
+scale_max = 0.6
+scale_curve = SubResource("CurveTexture_mekeu")
+color = Color(1, 0.283333, 0, 1)
+color_ramp = SubResource("GradientTexture1D_bgiwl")
+alpha_curve = SubResource("CurveTexture_bgiwl")
+emission_curve = SubResource("CurveTexture_aq33g")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wm1ig"]
+transparency = 1
+vertex_color_use_as_albedo = true
+
+[sub_resource type="SphereMesh" id="SphereMesh_mekeu"]
+material = SubResource("StandardMaterial3D_wm1ig")
+radial_segments = 8
+rings = 4
+
+[node name="Meteor" type="CharacterBody3D" groups=["obstacles"]]
+script = ExtResource("1_5civa")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0)
+mesh = SubResource("SphereMesh_qp6yn")
+surface_material_override/0 = SubResource("StandardMaterial3D_qp6yn")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_qp6yn")
+
+[node name="ImpactArea" type="Area3D" parent="."]
+
+[node name="ImpactCollision" type="CollisionShape3D" parent="ImpactArea"]
+shape = SubResource("SphereShape3D_5civa")
+
+[node name="Smoke" type="GPUParticles3D" parent="."]
+amount = 42
+lifetime = 2.0
+fixed_fps = 60
+process_material = SubResource("ParticleProcessMaterial_d1487")
+draw_pass_1 = SubResource("SphereMesh_mekeu")
+
+[connection signal="body_entered" from="ImpactArea" to="." method="_on_impact_area_body_entered"]

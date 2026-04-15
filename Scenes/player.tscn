@@ -1,0 +1,99 @@
+[gd_scene load_steps=19 format=3 uid="uid://3lbhksapsn35"]
+
+[ext_resource type="Script" uid="uid://cfkl3vdqnmwmp" path="res://Scripts/player_movement.gd" id="1_v0iea"]
+[ext_resource type="Texture2D" uid="uid://dixcf4wpu4nji" path="res://Assets/Texture/Gray_texture.png" id="2_cvnsp"]
+[ext_resource type="PackedScene" uid="uid://c843xn8vy06gx" path="res://Assets/Models/Car.glb" id="3_6t5aa"]
+[ext_resource type="PackedScene" uid="uid://c25npuqw8qrs3" path="res://Assets/Models/Rocket/Rocket.fbx" id="4_vgqql"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_f60y1"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6t5aa"]
+albedo_texture = ExtResource("2_cvnsp")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_f60y1"]
+size = Vector3(0.624451, 1, 2.48492)
+
+[sub_resource type="Curve" id="Curve_vgqql"]
+_data = [Vector2(0.272059, 1), 0.0, 0.0, 0, 0, Vector2(0.536765, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_vgqql"]
+curve = SubResource("Curve_vgqql")
+
+[sub_resource type="Gradient" id="Gradient_vgqql"]
+colors = PackedColorArray(1, 0.721569, 0, 1, 1, 0.347333, 0.11, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_fkybt"]
+gradient = SubResource("Gradient_vgqql")
+
+[sub_resource type="Curve" id="Curve_x3wgy"]
+_limits = [0.0, 2.0, 0.0, 1.0]
+_data = [Vector2(0, 2), 0.0, 0.0, 0, 0, Vector2(1, 0.966292), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_3smsa"]
+curve = SubResource("Curve_x3wgy")
+
+[sub_resource type="Curve" id="Curve_8erm5"]
+_limits = [0.0, 2.0, 0.0, 1.0]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.338235, 0.494382), 0.0, 0.0, 0, 0, Vector2(0.720588, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_f1ek2"]
+curve = SubResource("Curve_8erm5")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_tx1dd"]
+emission_shape_scale = Vector3(0.205, 0.215, 0.425)
+emission_shape = 1
+emission_sphere_radius = 0.2
+direction = Vector3(1, -1, 0)
+spread = 90.0
+initial_velocity_min = 0.5
+initial_velocity_max = 1.2
+gravity = Vector3(0, 0, 0)
+damping_max = 12.0
+scale_min = 0.2
+scale_max = 0.3
+scale_curve = SubResource("CurveTexture_f1ek2")
+color = Color(1, 0.721569, 0, 1)
+color_ramp = SubResource("GradientTexture1D_fkybt")
+alpha_curve = SubResource("CurveTexture_vgqql")
+emission_curve = SubResource("CurveTexture_3smsa")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_a801j"]
+transparency = 1
+vertex_color_use_as_albedo = true
+
+[sub_resource type="SphereMesh" id="SphereMesh_gymyn"]
+material = SubResource("StandardMaterial3D_a801j")
+radial_segments = 8
+rings = 4
+
+[node name="Player" type="CharacterBody3D" groups=["player"]]
+script = ExtResource("1_v0iea")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.106323, 0, 0, 0, 0.09, 0, 0, 0, 0.226817, 0, 0, 0)
+visible = false
+mesh = SubResource("BoxMesh_f60y1")
+surface_material_override/0 = SubResource("StandardMaterial3D_6t5aa")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(0.17, 0, 0, 0, 0.089, 0, 0, 0, 0.089, -0.000970154, 0, 0.00198545)
+shape = SubResource("BoxShape3D_f60y1")
+
+[node name="Car" parent="." instance=ExtResource("3_6t5aa")]
+transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 0, -0.0568325, 0)
+visible = false
+
+[node name="Rocket" parent="." instance=ExtResource("4_vgqql")]
+transform = Transform3D(0.6, 0, 0, 0, -2.62268e-08, 0.6, 0, -0.6, -2.62268e-08, -0.00082612, -0.272039, -0.00651106)
+
+[node name="Fire" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.000835687, 0.0935366, 0.211804)
+amount = 32
+fixed_fps = 60
+process_material = SubResource("ParticleProcessMaterial_tx1dd")
+draw_pass_1 = SubResource("SphereMesh_gymyn")
